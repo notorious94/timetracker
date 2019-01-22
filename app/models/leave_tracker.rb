@@ -91,10 +91,8 @@ class LeaveTracker < ActiveRecord::Base
     end
 
     if leave.leave_type == Leave::UNANNOUNCED
-      if leave.half_day == Leave::FIRST_QUARTER
+      if leave.half_day == Leave::FIRST_QUARTER || leave.half_day == Leave::FIRST_HALF
         total_hours_to_be_consumed = Leave::HOURS_FOR_QUARTER_DAY
-      elsif leave.half_day == Leave:: FIRST_HALF
-        total_hours_to_be_consumed = Leave::HOURS_FOR_HALF_DAY
       end
     end
 
@@ -124,10 +122,8 @@ class LeaveTracker < ActiveRecord::Base
     end
 
     if leave.leave_type == Leave::UNANNOUNCED
-      if leave.half_day == Leave::FIRST_QUARTER
+      if leave.half_day == Leave::FIRST_QUARTER || leave.half_day == Leave::FIRST_HALF
         total_hours_to_be_consumed = Leave::HOURS_FOR_QUARTER_DAY
-      elsif leave.half_day == Leave:: FIRST_HALF
-        total_hours_to_be_consumed = Leave::HOURS_FOR_HALF_DAY
       end
     end
     if leave.leave_type == Leave::CASUAL || leave.leave_type == Leave::UNANNOUNCED
