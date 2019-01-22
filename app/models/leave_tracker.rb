@@ -90,6 +90,14 @@ class LeaveTracker < ActiveRecord::Base
       total_hours_to_be_consumed = total_hours
     end
 
+    if leave.leave_type == Leave::UNANNOUNCED
+      if leave.half_day == Leave::FIRST_QUARTER
+        total_hours_to_be_consumed = Leave::HOURS_FOR_QUARTER_DAY
+      elsif leave.half_day == Leave:: FIRST_HALF
+        total_hours_to_be_consumed = Leave::HOURS_FOR_HALF_DAY
+      end
+    end
+
     if leave.leave_type == Leave::CASUAL || leave.leave_type == Leave::UNANNOUNCED
       consumed_casual_leave_balance = consumed_casual_leave.to_i + total_hours_to_be_consumed
       update_attributes(:consumed_vacation => consumed_casual_leave_balance)
@@ -115,6 +123,13 @@ class LeaveTracker < ActiveRecord::Base
       total_hours_to_be_consumed = total_hours
     end
 
+    if leave.leave_type == Leave::UNANNOUNCED
+      if leave.half_day == Leave::FIRST_QUARTER
+        total_hours_to_be_consumed = Leave::HOURS_FOR_QUARTER_DAY
+      elsif leave.half_day == Leave:: FIRST_HALF
+        total_hours_to_be_consumed = Leave::HOURS_FOR_HALF_DAY
+      end
+    end
     if leave.leave_type == Leave::CASUAL || leave.leave_type == Leave::UNANNOUNCED
       consumed_casual_leave_balance = consumed_casual_leave.to_i - total_hours_to_be_consumed
       update_attributes(:consumed_vacation => consumed_casual_leave_balance)

@@ -165,7 +165,11 @@ class User < ActiveRecord::Base
           first_half_day_leave = u.leaves.where('start_date = ? AND status = ? AND half_day = ?', Time.now.to_date, Leave::ACCEPTED, Leave::FIRST_HALF).first
           second_half_day_leave = u.leaves.where('start_date = ? AND status = ? AND half_day = ?', Time.now.to_date, Leave::ACCEPTED, Leave::SECOND_HALF).first
           if first_half_day_leave.nil?
-            u.create_half_day_unannounced_leave(Leave::FIRST_HALF)
+            if Time.now > Time.parse('today at 10:30am') && Time.now < Time.parse('today at 11:30am')
+              u.create_half_day_unannounced_leave(Leave::FIRST_QUARTER)
+            else
+              u.create_half_day_unannounced_leave(Leave::FIRST_HALF)
+            end
           elsif second_half_day_leave.nil? && Time.now > Time.parse('today at 3:00pm')
             u.create_half_day_unannounced_leave(Leave::SECOND_HALF)
           end
@@ -214,11 +218,11 @@ class User < ActiveRecord::Base
       leave_tracker.update_leave_tracker(leave)
       if approval_path.present?
         approval_path_owners.each do |email|
-          UserMailer.send_unannounced_leave_notification_to_admin(leave, email).deliver
+          #UserMailer.send_unannounced_leave_notification_to_admin(leave, email).deliver
         end
       end
-      UserMailer.send_unannounced_leave_notification_to_user(leave).deliver
-      UserMailer.send_unannounced_leave_notification_to_admin(leave, CONFIG['leave_admin']).deliver
+      #UserMailer.send_unannounced_leave_notification_to_user(leave).deliver
+      #UserMailer.send_unannounced_leave_notification_to_admin(leave, CONFIG['leave_admin']).deliver
     else
       Rails.logger.info "Unable to create unannounced leave for #{name}"
     end

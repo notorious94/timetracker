@@ -22,6 +22,7 @@ class Leave < ActiveRecord::Base
 
   HOURS_FOR_ONE_DAY = 8
   HOURS_FOR_HALF_DAY = HOURS_FOR_ONE_DAY / 2
+  HOURS_FOR_QUARTER_DAY = HOURS_FOR_ONE_DAY / 4
 
   LEAVE_STATUSES = [
     ['Pending', PENDING],
@@ -32,6 +33,7 @@ class Leave < ActiveRecord::Base
   FULL_DAY = 0
   FIRST_HALF = 1
   SECOND_HALF = 2
+  FIRST_QUARTER = 3
 
   LEAVE_DURATIONS = [
     ['Full Day', FULL_DAY],
@@ -185,14 +187,32 @@ class Leave < ActiveRecord::Base
   end
 
   def total_leave_hour
+
     if end_date.present? && half_day == 0
-      number_of_days * HOURS_FOR_ONE_DAY
+      hour=number_of_days * HOURS_FOR_ONE_DAY
     else
       if half_day == 0
-        Leave::HOURS_FOR_ONE_DAY
+        hour=Leave::HOURS_FOR_ONE_DAY
       else
-        Leave::HOURS_FOR_HALF_DAY
+        hour=Leave::HOURS_FOR_HALF_DAY
       end
     end
+    if leave_type == UNANNOUNCED
+      if half_day == FIRST_QUARTER
+        hour=HOURS_FOR_QUARTER_DAY
+      elsif half_day == FIRST_HALF
+        if quarter_day_leave_present?
+          hour=HOURS_FOR_QUARTER_DAY
+        else
+          hour=HOURS_FOR_HALF_DAY
+        end
+      end
+    end
+    hour
   end
+
+  def quarter_day_leave_present?
+    Leave.where(:user=> user, :start_date=> start_date,:half_day=> FIRST_QUARTER,:leave_type=> UNANNOUNCED).present?
+  end
+
 end
