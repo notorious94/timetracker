@@ -214,6 +214,7 @@ class User < ActiveRecord::Base
         # pending_at: u.approval_path.try(:path_chains).try(:count))
         pending_at: 0
     )
+    # todo uncomment emails before production
     if leave_tracker.present? && leave.save
       leave_tracker.update_leave_tracker(leave)
       if approval_path.present?
